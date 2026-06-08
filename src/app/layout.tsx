@@ -1,0 +1,63 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { Toaster } from "react-hot-toast";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Isayas Fikadu | Full Stack Web Developer",
+  description:
+    "Passionate full stack web developer from Ethiopia, building modern web applications using JavaScript technologies. Specializing in Next.js, React, Node.js, and Supabase.",
+  keywords: [
+    "Isayas Fikadu",
+    "Full Stack Developer",
+    "Web Developer",
+    "Next.js",
+    "React",
+    "Node.js",
+    "Supabase",
+    "Ethiopia",
+  ],
+  authors: [{ name: "Isayas Fikadu" }],
+  openGraph: {
+    title: "Isayas Fikadu | Full Stack Web Developer",
+    description:
+      "Passionate full stack web developer from Ethiopia building modern web applications.",
+    type: "website",
+    locale: "en_US",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 antialiased">
+        <ThemeProvider>
+          {children}
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              className:
+                "!bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-white !shadow-lg",
+              duration: 4000,
+            }}
+          />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
