@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* System font stack that closely matches Inter */
+:root {
+  --font-inter: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
