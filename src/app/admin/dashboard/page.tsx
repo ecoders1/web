@@ -90,9 +90,11 @@ export default function AdminDashboard() {
   }, [loadData]);
 
   const handleLogout = async () => {
-    sessionStorage.removeItem("admin_authenticated");
-    localStorage.removeItem("admin_authenticated");
-    router.push("/admin/login");
+    // Clear auth cookie
+    document.cookie = "admin_auth=; path=/; max-age=0";
+    sessionStorage.removeItem("admin_auth");
+    localStorage.removeItem("admin_auth");
+    window.location.href = "/admin/login";
   };
 
   const handleDeleteProject = async (id: string) => {

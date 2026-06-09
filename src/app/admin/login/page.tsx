@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Code2, Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck } from "lucide-react";
 
-// Admin credentials — always checked first
 const ADMIN_EMAIL = "iyasu4313@gmail.com";
 const ADMIN_PASSWORD = "Ayyuu@4313@";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,27 +19,24 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
 
-    // Small delay for UX
-    await new Promise((res) => setTimeout(res, 500));
+    await new Promise((res) => setTimeout(res, 400));
 
-    try {
-      // Always check hardcoded admin credentials first
-      if (
-        email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
-        password === ADMIN_PASSWORD
-      ) {
-        // Store auth in both sessionStorage and localStorage for persistence
-        sessionStorage.setItem("admin_authenticated", "true");
-        localStorage.setItem("admin_authenticated", "true");
-        router.push("/admin/dashboard");
-        return;
+    if (
+      email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
+      password === ADMIN_PASSWORD
+    ) {
+      // Set cookie that middleware can read (30 day expiry)
+      document.cookie = "admin_auth=true; path=/; max-age=2592000; SameSite=Lax";
+      try {
+        sessionStorage.setItem("admin_auth", "true");
+        localStorage.setItem("admin_auth", "true");
+      } catch {
+        // storage might be blocked in some browsers
       }
-
-      // Wrong credentials
-      setError("Invalid email or password. Please try again.");
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
+      // Hard redirect — bypasses any router issues
+      window.location.href = "/admin/dashboard";
+    } else {
+      setError("Incorrect email or password. Please try again.");
       setLoading(false);
     }
   };
@@ -155,7 +149,7 @@ export default function AdminLoginPage() {
               {loading ? (
                 <>
                   <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in...
+                  Opening Dashboard...
                 </>
               ) : (
                 <>

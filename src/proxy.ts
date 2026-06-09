@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Route protection for admin dashboard — Next.js 16 "proxy" convention
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin/dashboard")) {
-    // Supabase stores session in sb-* cookies
-    const hasSession = Array.from(request.cookies.getAll()).some(
-      (cookie) =>
-        cookie.name.startsWith("sb-") &&
-        cookie.name.endsWith("-auth-token")
-    );
+    // Check for our admin auth cookie set at login
+    const isAuthenticated = request.cookies.get("admin_auth")?.value === "true";
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const isDemoMode = !supabaseUrl || supabaseUrl === "your-supabase-url";
-
-    if (!isDemoMode && !hasSession) {
+    if (!isAuthenticated) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
   }
@@ -24,5 +16,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/dashboard/:path*"],
 };
