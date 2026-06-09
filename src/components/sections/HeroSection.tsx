@@ -36,9 +36,9 @@ function XIcon({ className }: { className?: string }) {
 }
 
 const socialLinks = [
-  { icon: GithubIcon, href: "https://github.com", label: "GitHub" },
+  { icon: GithubIcon, href: "https://github.com/ecoders1", label: "GitHub" },
   { icon: LinkedinIcon, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: XIcon, href: "https://twitter.com", label: "X (Twitter)" },
+  { icon: XIcon, href: "https://t.me/milkibn", label: "Telegram" },
 ];
 
 const textVariants: Variants = {

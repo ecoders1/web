@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 export const metadata: Metadata = {
   title: "Isayas Fikadu | Full Stack Web Developer",
   description:
-    "Passionate full stack web developer from Ethiopia, building modern web applications using JavaScript technologies. Specializing in Next.js, React, Node.js, and Supabase.",
+    "Passionate full stack web developer from Ambo, Ethiopia, building modern web applications using JavaScript technologies. Specializing in Next.js, React, Node.js, and Supabase.",
   keywords: [
     "Isayas Fikadu",
     "Full Stack Developer",
@@ -16,12 +16,14 @@ export const metadata: Metadata = {
     "Node.js",
     "Supabase",
     "Ethiopia",
+    "Ambo",
+    "Oromia",
   ],
-  authors: [{ name: "Isayas Fikadu" }],
+  authors: [{ name: "Isayas Fikadu", url: "https://github.com/ecoders1" }],
   openGraph: {
     title: "Isayas Fikadu | Full Stack Web Developer",
     description:
-      "Passionate full stack web developer from Ethiopia building modern web applications.",
+      "Passionate full stack web developer from Ambo, Ethiopia building modern web applications.",
     type: "website",
     locale: "en_US",
   },

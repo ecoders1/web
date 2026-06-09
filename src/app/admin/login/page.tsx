@@ -23,10 +23,10 @@ export default function AdminLoginPage() {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       if (!supabaseUrl || supabaseUrl === "your-supabase-url") {
         // Demo mode login
-        if (email === "admin@example.com" && password === "admin123") {
+        if (email === "iyasu4313@gmail.com" && password === "Ayyuu@4313@") {
           router.push("/admin/dashboard");
         } else {
-          setError("Invalid credentials. (Demo: admin@example.com / admin123)");
+          setError("Invalid credentials. Check your email and password.");
         }
         return;
       }
@@ -154,7 +154,7 @@ export default function AdminLoginPage() {
           </form>
 
           <p className="text-center text-gray-500 text-xs mt-6">
-            Demo credentials: admin@example.com / admin123
+            Admin access: iyasu4313@gmail.com
           </p>
 
           <div className="mt-4 text-center">

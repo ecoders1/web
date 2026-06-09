@@ -42,10 +42,10 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: GithubIcon, href: "https://github.com", label: "GitHub" },
+  { icon: GithubIcon, href: "https://github.com/ecoders1", label: "GitHub" },
   { icon: LinkedinIcon, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: XIcon, href: "https://twitter.com", label: "X (Twitter)" },
-  { icon: Mail, href: "mailto:isayas.fikadu@example.com", label: "Email" },
+  { icon: XIcon, href: "https://t.me/milkibn", label: "Telegram" },
+  { icon: Mail, href: "mailto:iyasu4313@gmail.com", label: "Email" },
 ];
 
 export default function Footer() {

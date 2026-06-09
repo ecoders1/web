@@ -547,7 +547,7 @@ function MessageModal({
             <p className="whitespace-pre-wrap">{message.message}</p>
           </div>
           <a
-            href={`mailto:${message.email}?subject=Re: Your message`}
+            href={`mailto:${message.email}?subject=Re: Your message&from=iyasu4313@gmail.com`}
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-full justify-center mt-2"
           >
             <Mail className="w-4 h-4" />

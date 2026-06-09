@@ -29,8 +29,8 @@ const techBadges = [
 ];
 
 const infoItems = [
-  { icon: MapPin, label: "Location", value: "Ethiopia" },
-  { icon: Mail, label: "Email", value: "isayas@example.com" },
+  { icon: MapPin, label: "Location", value: "Ambo, Oromia, Ethiopia" },
+  { icon: Mail, label: "Email", value: "iyasu4313@gmail.com" },
   { icon: Calendar, label: "Experience", value: "3+ Years" },
   { icon: Briefcase, label: "Status", value: "Open to Work" },
 ];

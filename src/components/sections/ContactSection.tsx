@@ -3,6 +3,14 @@
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Mail, MapPin, Phone, Send, CheckCircle, AlertCircle } from "lucide-react";
+
+function TelegramIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+    </svg>
+  );
+}
 import { SectionHeader } from "./AboutSection";
 
 interface FormState {
@@ -117,23 +125,30 @@ export default function ContactSection() {
                 {
                   icon: Mail,
                   label: "Email",
-                  value: "isayas.fikadu@example.com",
-                  href: "mailto:isayas.fikadu@example.com",
+                  value: "iyasu4313@gmail.com",
+                  href: "mailto:iyasu4313@gmail.com",
                   gradient: "from-purple-500 to-pink-500",
                 },
                 {
                   icon: MapPin,
                   label: "Location",
-                  value: "Ethiopia, East Africa",
+                  value: "Ambo, Oromia, Ethiopia",
                   href: null,
                   gradient: "from-emerald-500 to-teal-500",
                 },
                 {
                   icon: Phone,
                   label: "Phone",
-                  value: "+251 XXX XXX XXX",
-                  href: "tel:+251000000000",
+                  value: "+251 943 133 184",
+                  href: "tel:+251943133184",
                   gradient: "from-orange-500 to-amber-500",
+                },
+                {
+                  icon: TelegramIcon,
+                  label: "Telegram",
+                  value: "@milkibn",
+                  href: "https://t.me/milkibn",
+                  gradient: "from-sky-500 to-cyan-500",
                 },
               ].map(({ icon: Icon, label, value, href, gradient }) => (
                 <div
