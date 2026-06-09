@@ -9,7 +9,9 @@ import {
   Database,
   Smartphone,
   Search,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 import { SectionHeader } from "./AboutSection";
 
 const services = [
@@ -21,6 +23,7 @@ const services = [
     features: ["Next.js / React", "SSR & Static Sites", "Performance Optimized", "SEO Ready"],
     gradient: "from-purple-500 to-indigo-500",
     bgGradient: "from-purple-500/10 to-indigo-500/10",
+    href: "/services/web-development",
   },
   {
     icon: Palette,
@@ -30,6 +33,7 @@ const services = [
     features: ["Figma Prototyping", "Responsive Design", "Dark/Light Modes", "Framer Motion"],
     gradient: "from-pink-500 to-rose-500",
     bgGradient: "from-pink-500/10 to-rose-500/10",
+    href: null,
   },
   {
     icon: Server,
@@ -39,6 +43,7 @@ const services = [
     features: ["REST & GraphQL", "JWT Auth", "API Documentation", "Rate Limiting"],
     gradient: "from-orange-500 to-amber-500",
     bgGradient: "from-orange-500/10 to-amber-500/10",
+    href: null,
   },
   {
     icon: Database,
@@ -48,6 +53,7 @@ const services = [
     features: ["Supabase / PostgreSQL", "MySQL", "Real-time Data", "Database Design"],
     gradient: "from-emerald-500 to-teal-500",
     bgGradient: "from-emerald-500/10 to-teal-500/10",
+    href: null,
   },
   {
     icon: Smartphone,
@@ -57,6 +63,7 @@ const services = [
     features: ["Mobile First", "Cross-browser", "PWA Support", "Touch Optimized"],
     gradient: "from-cyan-500 to-blue-500",
     bgGradient: "from-cyan-500/10 to-blue-500/10",
+    href: null,
   },
   {
     icon: Search,
@@ -66,6 +73,7 @@ const services = [
     features: ["Meta Tags", "Schema Markup", "Core Web Vitals", "Sitemap & Robots"],
     gradient: "from-violet-500 to-purple-500",
     bgGradient: "from-violet-500/10 to-purple-500/10",
+    href: null,
   },
 ];
 
@@ -129,40 +137,31 @@ function ServiceCard({
   isInView: boolean;
 }) {
   const Icon = service.icon;
-
-  return (
+  const cardContent = (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 card-hover hover:border-purple-500/50 overflow-hidden"
+      className={`group relative p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 card-hover hover:border-purple-500/50 overflow-hidden ${service.href ? "cursor-pointer" : ""}`}
     >
       {/* Background gradient on hover */}
       <div
         className={`absolute inset-0 bg-gradient-to-br ${service.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`}
       />
-
       {/* Content */}
       <div className="relative z-10">
-        {/* Icon */}
         <div
           className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}
         >
           <Icon className="w-7 h-7 text-white" />
         </div>
-
-        {/* Title */}
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
           {service.title}
         </h3>
-
-        {/* Description */}
         <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-5">
           {service.description}
         </p>
-
-        {/* Features */}
-        <ul className="space-y-2">
+        <ul className="space-y-2 mb-4">
           {service.features.map((feature) => (
             <li
               key={feature}
@@ -175,7 +174,18 @@ function ServiceCard({
             </li>
           ))}
         </ul>
+        {service.href && (
+          <div className="flex items-center gap-1.5 text-sm font-semibold text-purple-600 dark:text-purple-400 mt-2 group-hover:gap-2.5 transition-all">
+            Learn More
+            <ArrowRight className="w-4 h-4" />
+          </div>
+        )}
       </div>
     </motion.div>
   );
+
+  if (service.href) {
+    return <Link href={service.href}>{cardContent}</Link>;
+  }
+  return cardContent;
 }
