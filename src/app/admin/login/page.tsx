@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Code2, Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 
-// Admin credentials (used when Supabase Auth is not configured)
+// Admin credentials — always checked first
 const ADMIN_EMAIL = "iyasu4313@gmail.com";
 const ADMIN_PASSWORD = "Ayyuu@4313@";
 
@@ -23,38 +22,24 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
 
+    // Small delay for UX
+    await new Promise((res) => setTimeout(res, 500));
+
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const isSupabaseConfigured = supabaseUrl && supabaseUrl !== "your-supabase-url";
-
-      if (isSupabaseConfigured) {
-        // Try Supabase Auth first
-        const { error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (authError) {
-          // Fall back to local credential check
-          if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-            // Store a session flag in sessionStorage
-            sessionStorage.setItem("admin_authenticated", "true");
-            router.push("/admin/dashboard");
-            return;
-          }
-          setError("Invalid email or password. Please try again.");
-        } else {
-          router.push("/admin/dashboard");
-        }
-      } else {
-        // No Supabase — use local credentials
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-          sessionStorage.setItem("admin_authenticated", "true");
-          router.push("/admin/dashboard");
-        } else {
-          setError("Invalid email or password. Please try again.");
-        }
+      // Always check hardcoded admin credentials first
+      if (
+        email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
+        password === ADMIN_PASSWORD
+      ) {
+        // Store auth in both sessionStorage and localStorage for persistence
+        sessionStorage.setItem("admin_authenticated", "true");
+        localStorage.setItem("admin_authenticated", "true");
+        router.push("/admin/dashboard");
+        return;
       }
+
+      // Wrong credentials
+      setError("Invalid email or password. Please try again.");
     } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
@@ -92,7 +77,9 @@ export default function AdminLoginPage() {
           {/* Secure badge */}
           <div className="flex items-center justify-center gap-2 mb-6 px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/20">
             <ShieldCheck className="w-4 h-4 text-green-400" />
-            <span className="text-green-400 text-xs font-medium">Secure Admin Access</span>
+            <span className="text-green-400 text-xs font-medium">
+              Secure Admin Access
+            </span>
           </div>
 
           {/* Error */}

@@ -91,7 +91,7 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     sessionStorage.removeItem("admin_authenticated");
-    if (!isDemoMode) await supabase.auth.signOut();
+    localStorage.removeItem("admin_authenticated");
     router.push("/admin/login");
   };
 
