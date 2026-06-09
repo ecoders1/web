@@ -325,7 +325,7 @@ export default function ContactSection() {
                     label="Full Name"
                     name="fullName"
                     type="text"
-                    placeholder="e.g. Isayas Fikadu"
+                    placeholder="Enter your full name"
                     value={form.fullName}
                     error={touched.fullName ? errors.fullName : undefined}
                     hint="Enter your first and last name"
@@ -340,7 +340,7 @@ export default function ContactSection() {
                     label="Email Address"
                     name="email"
                     type="email"
-                    placeholder="e.g. name@gmail.com"
+                    placeholder="Enter your email address"
                     value={form.email}
                     error={touched.email ? errors.email : undefined}
                     hint="A valid email you can be reached at"
