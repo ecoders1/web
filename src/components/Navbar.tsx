@@ -55,7 +55,7 @@ export default function Navbar() {
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
               <Code2 className="w-5 h-5 text-white" />
             </div>
-            <span className="gradient-text">IF</span>
+            <span className="gradient-text font-bold text-lg">Isayas</span>
           </motion.a>
 
           {/* Desktop Navigation */}
