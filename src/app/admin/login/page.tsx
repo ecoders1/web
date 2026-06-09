@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Code2, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Code2, Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+
+// Admin credentials (used when Supabase Auth is not configured)
+const ADMIN_EMAIL = "iyasu4313@gmail.com";
+const ADMIN_PASSWORD = "Ayyuu@4313@";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -21,25 +25,35 @@ export default function AdminLoginPage() {
 
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      if (!supabaseUrl || supabaseUrl === "your-supabase-url") {
-        // Demo mode login
-        if (email === "iyasu4313@gmail.com" && password === "Ayyuu@4313@") {
+      const isSupabaseConfigured = supabaseUrl && supabaseUrl !== "your-supabase-url";
+
+      if (isSupabaseConfigured) {
+        // Try Supabase Auth first
+        const { error: authError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (authError) {
+          // Fall back to local credential check
+          if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            // Store a session flag in sessionStorage
+            sessionStorage.setItem("admin_authenticated", "true");
+            router.push("/admin/dashboard");
+            return;
+          }
+          setError("Invalid email or password. Please try again.");
+        } else {
+          router.push("/admin/dashboard");
+        }
+      } else {
+        // No Supabase — use local credentials
+        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+          sessionStorage.setItem("admin_authenticated", "true");
           router.push("/admin/dashboard");
         } else {
-          setError("Invalid credentials. Check your email and password.");
+          setError("Invalid email or password. Please try again.");
         }
-        return;
-      }
-
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError) {
-        setError(authError.message);
-      } else {
-        router.push("/admin/dashboard");
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");
@@ -54,6 +68,7 @@ export default function AdminLoginPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-3/4 left-1/3 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl" />
       </div>
 
       <motion.div
@@ -65,13 +80,19 @@ export default function AdminLoginPage() {
         <div className="glass rounded-2xl p-8 border border-white/20 shadow-2xl shadow-purple-500/20">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/40">
               <Code2 className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white">Admin Login</h1>
+            <h1 className="text-2xl font-bold text-white">Admin Portal</h1>
             <p className="text-gray-400 text-sm mt-1">
-              Access the portfolio dashboard
+              Isayas Fikadu — Portfolio Dashboard
             </p>
+          </div>
+
+          {/* Secure badge */}
+          <div className="flex items-center justify-center gap-2 mb-6 px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/20">
+            <ShieldCheck className="w-4 h-4 text-green-400" />
+            <span className="text-green-400 text-xs font-medium">Secure Admin Access</span>
           </div>
 
           {/* Error */}
@@ -98,9 +119,10 @@ export default function AdminLoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@example.com"
+                  placeholder="iyasu4313@gmail.com"
                   required
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  autoComplete="email"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -116,9 +138,10 @@ export default function AdminLoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="••••••••••"
                   required
-                  className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  autoComplete="current-password"
+                  className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
                 <button
                   type="button"
@@ -138,7 +161,7 @@ export default function AdminLoginPage() {
             <motion.button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-500/30"
+              className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-500/30 mt-2"
               whileHover={{ scale: loading ? 1 : 1.02 }}
               whileTap={{ scale: loading ? 1 : 0.98 }}
             >
@@ -148,16 +171,15 @@ export default function AdminLoginPage() {
                   Signing in...
                 </>
               ) : (
-                "Sign In"
+                <>
+                  <ShieldCheck className="w-5 h-5" />
+                  Sign In to Dashboard
+                </>
               )}
             </motion.button>
           </form>
 
-          <p className="text-center text-gray-500 text-xs mt-6">
-            Admin access: iyasu4313@gmail.com
-          </p>
-
-          <div className="mt-4 text-center">
+          <div className="mt-6 pt-5 border-t border-white/10 text-center">
             <a
               href="/"
               className="text-sm text-gray-400 hover:text-purple-400 transition-colors"
