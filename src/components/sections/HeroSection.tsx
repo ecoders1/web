@@ -256,6 +256,31 @@ export default function HeroSection() {
             </motion.a>
           ))}
         </motion.div>
+
+        {/* Profile photo — floating */}
+        <motion.div
+          custom={6}
+          initial="hidden"
+          animate="visible"
+          variants={textVariants}
+          className="mt-12 flex justify-center"
+        >
+          <div className="relative">
+            <div className="w-36 h-36 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-500 p-1 shadow-2xl shadow-purple-500/40 animate-float">
+              <div className="w-full h-full rounded-full overflow-hidden">
+                <img
+                  src="/profile.jpg"
+                  alt="Isayas Fikadu"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+            </div>
+            <div className="absolute -bottom-2 -right-2 glass px-3 py-1.5 rounded-full text-xs text-green-400 flex items-center gap-1.5 border border-green-400/20 whitespace-nowrap">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              Open to Work
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Scroll indicator */}

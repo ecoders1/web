@@ -6,7 +6,6 @@ import {
   MapPin,
   Mail,
   Calendar,
-  Code2,
   Globe,
   Briefcase,
 } from "lucide-react";
@@ -56,11 +55,15 @@ export default function AboutSection() {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            {/* Avatar placeholder */}
+            {/* Avatar */}
             <div className="relative mb-8 inline-block">
               <div className="w-48 h-48 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-500 p-1 shadow-2xl shadow-purple-500/30">
-                <div className="w-full h-full rounded-2xl bg-gray-900 flex items-center justify-center">
-                  <Code2 className="w-20 h-20 text-purple-400" />
+                <div className="w-full h-full rounded-2xl overflow-hidden bg-gray-900">
+                  <img
+                    src="/profile.jpg"
+                    alt="Isayas Fikadu"
+                    className="w-full h-full object-cover object-top"
+                  />
                 </div>
               </div>
               {/* Status badge */}
