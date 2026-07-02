@@ -137,13 +137,6 @@ const values = [
   },
 ];
 
-const stats = [
-  { value: "3+", label: "Years Experience", icon: Calendar },
-  { value: "20+", label: "Projects Delivered", icon: Rocket },
-  { value: "15+", label: "Happy Clients", icon: Users },
-  { value: "100%", label: "Commitment", icon: Heart },
-];
-
 const tabs = ["Bio", "Skills", "Timeline", "Values"] as const;
 type Tab = typeof tabs[number];
 
@@ -162,32 +155,8 @@ export default function AboutSection() {
           subtitle="Full Stack Developer from Ethiopia passionate about building modern web applications that make a real difference."
         />
 
-        {/* ── Stats Row ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          ref={ref}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16"
-        >
-          {stats.map((s, i) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: i * 0.1 }}
-              className="text-center p-5 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-purple-500/30 transition-all"
-            >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mx-auto mb-3">
-                <s.icon className="w-5 h-5 text-purple-500" />
-              </div>
-              <div className="text-3xl font-bold gradient-text mb-1">{s.value}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">{s.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
         {/* ── Main Content ── */}
-        <div className="grid lg:grid-cols-5 gap-12 items-start">
+        <div ref={ref} className="grid lg:grid-cols-5 gap-12 items-start">
 
           {/* ── LEFT: Profile Card ── */}
           <motion.div
@@ -337,27 +306,6 @@ export default function AboutSection() {
                   </div>
                 </div>
 
-                {/* Personal interests */}
-                <div className="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-pink-500" /> Outside of Coding
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {[
-                      { emoji: "📚", label: "Reading tech articles" },
-                      { emoji: "🎯", label: "Problem solving" },
-                      { emoji: "🌍", label: "Exploring new tech" },
-                      { emoji: "☕", label: "Coffee & coding" },
-                      { emoji: "🤝", label: "Mentoring others" },
-                      { emoji: "🚀", label: "Open source" },
-                    ].map((item) => (
-                      <div key={item.label} className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-400">
-                        <span className="text-lg">{item.emoji}</span>
-                        <span className="text-xs">{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </motion.div>
             )}
 

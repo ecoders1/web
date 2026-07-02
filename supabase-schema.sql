@@ -82,6 +82,9 @@ CREATE POLICY "messages_public_insert"
   ON messages FOR INSERT
   WITH CHECK (true);
 
+-- Also allow service role and anon to insert
+ALTER TABLE messages FORCE ROW LEVEL SECURITY;
+
 CREATE POLICY "messages_auth_read"
   ON messages FOR SELECT
   TO authenticated
@@ -89,6 +92,11 @@ CREATE POLICY "messages_auth_read"
 
 CREATE POLICY "messages_auth_update"
   ON messages FOR UPDATE
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "messages_auth_delete"
+  ON messages FOR DELETE
   TO authenticated
   USING (true);
 

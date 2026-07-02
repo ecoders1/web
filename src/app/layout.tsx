@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "react-hot-toast";
-import AIAssistant from "@/components/AIAssistant";
 
 export const metadata: Metadata = {
   title: "Isayas Fikadu | Full Stack Web Developer",
@@ -44,7 +43,6 @@ export default function RootLayout({
       <body className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 antialiased" style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}>
         <ThemeProvider>
           {children}
-          <AIAssistant />
           <Toaster
             position="bottom-right"
             toastOptions={{

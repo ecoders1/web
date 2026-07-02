@@ -17,6 +17,12 @@ import {
   X,
   Save,
   ExternalLink,
+  Search,
+  RefreshCw,
+  CheckCheck,
+  Filter,
+  Clock,
+  User,
 } from "lucide-react";
 
 function GithubIcon({ className }: { className?: string }) {
@@ -89,6 +95,26 @@ export default function AdminDashboard() {
     loadData();
   }, [loadData]);
 
+  // Real-time subscription for new messages
+  useEffect(() => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const demo = !supabaseUrl || supabaseUrl === "your-supabase-url";
+    if (demo) return;
+
+    const channel = supabase
+      .channel("messages-changes")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          setMessages((prev) => [payload.new as Message, ...prev]);
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const handleLogout = async () => {
     // Clear auth cookie
     document.cookie = "admin_auth=; path=/; max-age=0";
@@ -111,15 +137,30 @@ export default function AdminDashboard() {
 
   const handleMarkRead = async (id: string) => {
     if (isDemoMode) {
-      setMessages((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, read: true } : m))
-      );
+      setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, read: true } : m)));
       return;
     }
     await supabase.from("messages").update({ read: true }).eq("id", id);
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, read: true } : m))
-    );
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, read: true } : m)));
+  };
+
+  const handleMarkAllRead = async () => {
+    if (isDemoMode) {
+      setMessages((prev) => prev.map((m) => ({ ...m, read: true })));
+      return;
+    }
+    await supabase.from("messages").update({ read: true }).eq("read", false);
+    setMessages((prev) => prev.map((m) => ({ ...m, read: true })));
+  };
+
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm("Delete this message?")) return;
+    if (isDemoMode) {
+      setMessages((prev) => prev.filter((m) => m.id !== id));
+      return;
+    }
+    await supabase.from("messages").delete().eq("id", id);
+    setMessages((prev) => prev.filter((m) => m.id !== id));
   };
 
   const unreadCount = messages.filter((m) => !m.read).length;
@@ -243,6 +284,9 @@ export default function AdminDashboard() {
                     setSelectedMessage(m);
                     handleMarkRead(m.id);
                   }}
+                  onDelete={handleDeleteMessage}
+                  onMarkAllRead={handleMarkAllRead}
+                  onRefresh={loadData}
                 />
               )}
             </>
@@ -465,46 +509,179 @@ function ProjectsTab({
 function MessagesTab({
   messages,
   onSelect,
+  onDelete,
+  onMarkAllRead,
+  onRefresh,
 }: {
   messages: Message[];
   onSelect: (m: Message) => void;
+  onDelete: (id: string) => void;
+  onMarkAllRead: () => void;
+  onRefresh: () => void;
 }) {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const unread = messages.filter((m) => !m.read).length;
+
+  const filtered = messages.filter((m) => {
+    const matchSearch =
+      search === "" ||
+      m.name.toLowerCase().includes(search.toLowerCase()) ||
+      m.email.toLowerCase().includes(search.toLowerCase()) ||
+      m.message.toLowerCase().includes(search.toLowerCase());
+    const matchFilter =
+      filter === "all" ||
+      (filter === "unread" && !m.read) ||
+      (filter === "read" && m.read);
+    return matchSearch && matchFilter;
+  });
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await onRefresh();
+    setTimeout(() => setRefreshing(false), 600);
+  };
+
   return (
-    <div className="space-y-3">
-      {messages.length === 0 && (
-        <div className="text-center py-16 text-gray-500">No messages yet.</div>
-      )}
-      {messages.map((message, i) => (
-        <motion.button
-          key={message.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.05 }}
-          onClick={() => onSelect(message)}
-          className="w-full text-left p-5 rounded-2xl bg-gray-900 border border-gray-800 hover:border-purple-500/50 transition-all group"
-        >
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 text-white font-bold">
-              {message.name[0]?.toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <p className={`font-semibold ${!message.read ? "text-white" : "text-gray-300"}`}>
-                  {message.name}
-                </p>
-                {!message.read && (
-                  <span className="w-2 h-2 rounded-full bg-purple-400" />
-                )}
-              </div>
-              <p className="text-sm text-gray-400 truncate">{message.email}</p>
-              <p className="text-sm text-gray-500 mt-1 line-clamp-1">{message.message}</p>
-            </div>
-            <p className="text-xs text-gray-500 flex-shrink-0">
-              {new Date(message.created_at).toLocaleDateString()}
-            </p>
+    <div>
+      {/* Toolbar */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        {/* Search */}
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search messages..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+          />
+        </div>
+
+        {/* Filter */}
+        <div className="flex gap-2">
+          {(["all", "unread", "read"] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-2 rounded-xl text-xs font-medium transition-all capitalize ${
+                filter === f
+                  ? "bg-purple-600 text-white"
+                  : "bg-gray-900 border border-gray-700 text-gray-400 hover:text-white"
+              }`}
+            >
+              {f} {f === "unread" && unread > 0 && `(${unread})`}
+            </button>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          {unread > 0 && (
+            <button
+              onClick={onMarkAllRead}
+              title="Mark all as read"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-900 border border-gray-700 text-gray-400 hover:text-green-400 hover:border-green-500/50 transition-all text-xs"
+            >
+              <CheckCheck className="w-3.5 h-3.5" />
+              Mark all read
+            </button>
+          )}
+          <button
+            onClick={handleRefresh}
+            title="Refresh"
+            className="p-2.5 rounded-xl bg-gray-900 border border-gray-700 text-gray-400 hover:text-white transition-all"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {[
+          { label: "Total", value: messages.length, color: "text-white", bg: "bg-gray-900" },
+          { label: "Unread", value: unread, color: "text-purple-400", bg: "bg-purple-900/20 border-purple-500/20" },
+          { label: "Read", value: messages.length - unread, color: "text-green-400", bg: "bg-green-900/20 border-green-500/20" },
+        ].map((s) => (
+          <div key={s.label} className={`p-3 rounded-xl border border-gray-800 ${s.bg} text-center`}>
+            <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
+            <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
           </div>
-        </motion.button>
-      ))}
+        ))}
+      </div>
+
+      {/* Message list */}
+      {filtered.length === 0 ? (
+        <div className="text-center py-16 text-gray-500">
+          <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-30" />
+          <p>{search ? "No messages match your search." : "No messages yet."}</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {filtered.map((message, i) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+              className={`group flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${
+                !message.read
+                  ? "bg-gray-900 border-purple-500/30 hover:border-purple-500/60"
+                  : "bg-gray-900/50 border-gray-800 hover:border-gray-700"
+              }`}
+              onClick={() => onSelect(message)}
+            >
+              {/* Avatar */}
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-lg shadow-md">
+                {message.name[0]?.toUpperCase()}
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <p className={`font-semibold text-sm ${!message.read ? "text-white" : "text-gray-300"}`}>
+                    {message.name}
+                  </p>
+                  {!message.read && (
+                    <span className="px-1.5 py-0.5 rounded-full text-xs bg-purple-600 text-white font-bold">New</span>
+                  )}
+                </div>
+                <p className="text-xs text-purple-400 mb-1">{message.email}</p>
+                <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{message.message}</p>
+              </div>
+
+              {/* Right side */}
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <Clock className="w-3 h-3" />
+                  {new Date(message.created_at).toLocaleDateString("en-US", {
+                    month: "short", day: "numeric",
+                  })}
+                </div>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onSelect(message); }}
+                    className="p-1.5 rounded-lg bg-gray-800 hover:bg-purple-900/50 text-gray-400 hover:text-purple-400 transition-colors"
+                    title="View"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDelete(message.id); }}
+                    className="p-1.5 rounded-lg bg-gray-800 hover:bg-red-900/50 text-gray-400 hover:text-red-400 transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
